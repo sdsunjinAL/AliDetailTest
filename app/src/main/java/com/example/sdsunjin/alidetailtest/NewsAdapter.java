@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -15,27 +14,17 @@ import java.util.List;
 /**
  * Created by sdsunjin on 16/7/13.
  */
-public class NewsAdapter extends BaseAdapter  implements AbsListView.OnScrollListener{
+public class NewsAdapter extends BaseAdapter {
 
     private List<NewsBean> mList;
     private LayoutInflater mInflater; //创建LayoutInflater对象用于转化layout布局作为每一个item
     private ImageLoader mImageLoader;
-    private int mStartItem; //滑动listview停止时屏幕显示的第一个item
-    private int mEndItem; //滑动listView停止时屏幕显示的最后一个item
-    public static String[] URLS; //保存所有图片的url
-    private boolean mFirstIn; //判断是否是首次启动加载，如果是进行预加载
 
-    public NewsAdapter(Context context, List<NewsBean> data, ListView listView) {
+    public NewsAdapter(Context context, List<NewsBean> data) {
         mList = data;
         // 初始化inflater对象
         mInflater = LayoutInflater.from(context);
         mImageLoader = new ImageLoader();
-        URLS = new String[data.size()]; //初始化URLS，并定义其长度
-        for (int i=0; i<data.size(); i++) {
-            URLS[i] = data.get(i).newsIcon; //获取data所有图片的url存到静态URLS[]数组中
-        }
-        listView.setOnScrollListener(this); //监听listView的滑动
-        mFirstIn = true;   //为首次加载listView设置一个boolean类型的标签
     }
 
     @Override
@@ -91,32 +80,6 @@ public class NewsAdapter extends BaseAdapter  implements AbsListView.OnScrollLis
         viewHolder.tvContent.setText(mList.get(position).newsContent);
 
         return convertView;
-    }
-
-    /*
-    * 通过监听判断当前的listView滚动的状态，当在滚动过程中则取消所有的下载项，当停止滚动时判断listView在屏幕中展示的第一项及最后一项进行加载
-    * */
-    @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) { //当ListView滑动的状态切换的时候调用
-
-        if (scrollState == SCROLL_STATE_IDLE) { //首先判断listView的当前滑动状态，如果滑动停止则加载图片
-            mImageLoader.loadImages(mStartItem, mEndItem);
-        } else {
-
-        }
-    }
-    /*
-    * firstVisibleItem表示listView在屏幕中展示的第一个可见元素，visibleItemCount表示可见元素的个数
-    * */
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) { //当listView滑动的时候调用
-        mStartItem = firstVisibleItem;
-        mEndItem = firstVisibleItem + visibleItemCount;
-        //首次启动加载显示的时候调用
-        if (mFirstIn && visibleItemCount>0) {
-            mImageLoader.loadImages(mStartItem, mEndItem); // 表示第一次加载listView并且已绘制了可见范围内的item
-            mFirstIn = false; //后面就是调用滑动加载图片了，所以该处设置为false，后面不再执行该段逻辑
-        }
     }
 
     /*

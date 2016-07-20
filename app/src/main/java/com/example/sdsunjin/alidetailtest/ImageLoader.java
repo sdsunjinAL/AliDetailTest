@@ -2,7 +2,6 @@ package com.example.sdsunjin.alidetailtest;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.os.Handler;
 import android.os.Message;
 import android.util.LruCache;
@@ -58,8 +57,9 @@ public class ImageLoader {
         }
     };
 
-    public void showImageByThread(String url, ImageView imageView) { //创建子线程下载图片
+    public void showImageByThread(ImageView imageView, String url) { //创建子线程下载图片
 
+        mImageView = imageView;
         mUrl = url;
         Bitmap bitmap = getBitmapFromCache(mUrl); //首先从缓存中查询是否有图片，如果没有则去子线程下载，如果有则将通过key从缓存获取的图片赋给对应的imageView进行展示；
         if (null == bitmap) {
@@ -104,18 +104,4 @@ public class ImageLoader {
         return null;
     }
 
-    /**
-     * 加载listview可见范围内的所有图片
-     *
-     */
-    public void loadImages(int start, int end) {
-        for (int i=start; i<end; i++) {
-            String url = NewsAdapter.URLS[i];
-            //看是否能从缓存中取出对应的图片
-            Bitmap bitmap = getBitmapFromCache(url);
-            if (null == bitmap) {
-                showImageByThread(url);
-            }
-        }
-    }
 }
